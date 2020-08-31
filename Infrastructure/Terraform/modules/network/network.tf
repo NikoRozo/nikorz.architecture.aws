@@ -15,7 +15,7 @@ module "vpc" {
 
   name = "${var.name}-vpc"
   tags = var.tags
-  cidr = "${var.vpc_cidr}"
+  cidr = var.vpc_cidr
 }
 
 module "public_subnet" {
@@ -24,15 +24,15 @@ module "public_subnet" {
   name   = "${var.name}-public"
   tags   = var.tags
   vpc_id = "${module.vpc.vpc_id}"
-  cidrs  = "${var.public_subnets}"
-  azs    = "${var.azs}"
+  cidrs  = var.public_subnets
+  azs    = var.azs
 }
 
 module "nat" {
   source = "./nat"
 
   name              = "${var.name}-nat"
-  azs               = "${var.azs}"
+  azs               = var.azs
   public_subnet_ids = "${module.public_subnet.subnet_ids}"
   tags = var.tags
   one_nat           = var.one_nat
@@ -44,15 +44,16 @@ module "private_subnet" {
   name   = "${var.name}-private"
   tags = var.tags
   vpc_id = "${module.vpc.vpc_id}"
-  cidrs  = "${var.private_subnets}"
-  azs    = "${var.azs}"
+  cidrs  = var.private_subnets
+  azs    = var.azs
 
   nat_gateway_ids = "${module.nat.nat_gateway_ids}"
 }
 
 resource "aws_network_acl" "acl" {
   vpc_id     = module.vpc.vpc_id
-  subnet_ids = flatten([concat([split(",", module.public_subnet.subnet_ids)], [split(",", module.private_subnet.subnet_ids)])])
+  subnet_ids = setunion(module.public_subnet.subnet_ids, module.private_subnet.subnet_ids)
+  #subnet_ids = flatten([concat([split(",", module.public_subnet.subnet_ids)], [split(",", module.private_subnet.subnet_ids)])])
 
   ingress {
     protocol   = "-1"
