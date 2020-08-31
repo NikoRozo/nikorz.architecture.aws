@@ -1,5 +1,5 @@
 #--------------------------------------------------------------
-# Estos modulos
+# Estos modulos crea los recursos necesarios para la VPC
 #--------------------------------------------------------------
 
 variable "name"            { }
@@ -8,6 +8,7 @@ variable "vpc_cidr"        { }
 variable "azs"             { }
 variable "private_subnets" { }
 variable "public_subnets"  { }
+variable "one_nat"         { }
 
 module "vpc" {
   source = "./vpc"
@@ -21,7 +22,7 @@ module "public_subnet" {
   source = "./public_subnet"
 
   name   = "${var.name}-public"
-  tags = var.tags
+  tags   = var.tags
   vpc_id = "${module.vpc.vpc_id}"
   cidrs  = "${var.public_subnets}"
   azs    = "${var.azs}"
@@ -33,6 +34,8 @@ module "nat" {
   name              = "${var.name}-nat"
   azs               = "${var.azs}"
   public_subnet_ids = "${module.public_subnet.subnet_ids}"
+  tags = var.tags
+  one_nat           = var.one_nat
 }
 
 module "private_subnet" {

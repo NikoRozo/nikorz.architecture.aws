@@ -8,6 +8,7 @@ variable "vpc_cidr"        { }
 variable "azs"             { }
 variable "private_subnets" { }
 variable "public_subnets"  { }
+variable "one_nat"         { }
 
 module "app-demo-s3" {
     source = "./modules/network"
@@ -17,4 +18,5 @@ module "app-demo-s3" {
     azs = var.azs
     private_subnets = var.private_subnets
     public_subnets = var.public_subnets
+    one_nat = var.one_nat
 }
