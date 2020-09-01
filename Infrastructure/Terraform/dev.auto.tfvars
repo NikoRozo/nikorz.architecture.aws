@@ -30,7 +30,7 @@ ingress_rule = [
 ]
 
 # variable ECS
-ami                       = "ami-02354e95b39ca8dec"
+ami                       = "ami-0e2efdaddecea9838" #"ami-02354e95b39ca8dec"
 instance_type             = "t2.micro"
 key_name                  = "nikokp"
 max_size                  = 2

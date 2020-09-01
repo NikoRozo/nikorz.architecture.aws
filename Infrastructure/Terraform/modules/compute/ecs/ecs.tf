@@ -18,6 +18,9 @@ variable "max_size"           { default = 1 }
 variable "min_size"           { default = 1 }
 variable "desired_capacity"   { default = 1 }
 variable "private_subnet_ids" { }
+# Variable ALB
+variable "port"               { default = "80" }
+variable "protocol"           { default = "HTTP" }
 
 module "sg-ecs" {
     source = "../../security/security_group"
@@ -27,6 +30,18 @@ module "sg-ecs" {
     vpc_id = var.vpc_id
     ingress_rule = var.ingress_rule
     cidrs = var.subnets
+}
+
+module "alb" {
+    source = "./alb"
+
+    name = "${var.name}-alb"
+    tags = var.tags
+    security_groups = "${module.sg-ecs.sg_id}"
+    vpc_id = var.vpc_id
+    private_subnet_ids = var.private_subnet_ids
+    port = var.port
+    protocol = var.protocol
 }
 
 module "launch" {
@@ -51,8 +66,10 @@ module "auntoscalling" {
     launch_config = "${module.launch.launch_name}"
 }
 
+
 resource "aws_ecs_cluster" "ecs-cluster" {
     name = "${var.name}-ecs-cluster"
 }
 
 output "cluster_id" { value = "${aws_ecs_cluster.ecs-cluster.*.id}" }
+output "alb-gp-arn" { value = "${module.alb.*.alb-gp-arn}" }
