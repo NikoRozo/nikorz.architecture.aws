@@ -32,23 +32,6 @@ module "network" {
     one_nat = var.one_nat
 }
 
-#module "ecs" {
-#    source = "./modules/ecs"
-
-#    name = var.name
-#    tags = var.tags
-#    vpc_id = "${module.network.vpc_id}"
-#    ami = var.ami
-#    instance_type = var.instance_type
-    #iam_instance_profile_id = var.iam_instance_profile_id
-#    key_name = var.key_name
-#    max_size = var.max_size
-#    min_size = var.min_size
-#    desired_capacity = var.desired_capacity
-#    private_subnet_ids = "${module.network.private_subnet_ids}"
-#    #load_balancers = var.load_balancers
-#}
-
 module "ecs_cluster" {
     source = "./modules/compute/ecs"
 
